@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card {
+    @apply bg-gradient-to-b from-[#0f0f10] to-[#181818] border border-[#d4a64f26] rounded-2xl p-6 shadow-royal backdrop-blur-sm;
+  }
+
+  .btn-primary {
+    @apply bg-[#d4a64f] text-black font-semibold px-4 py-2 rounded-xl transition-all duration-300 hover:bg-[#e9c15c] hover:shadow-royal;
+  }
+}
