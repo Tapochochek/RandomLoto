@@ -1,4 +1,4 @@
-using RandomTrust.Core.EntropySources;
+п»їusing RandomTrust.Core.EntropySources;
 using RandomTrust.Core.Generators;
 using RandomTrust.Core.Interfaces;
 using RandomTrust.Services;
@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//  Настройки контроллеров и JSON
+// РќР°СЃС‚СЂРѕР№РєРё РєРѕРЅС‚СЂРѕР»Р»РµСЂРѕРІ Рё JSON
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -14,32 +14,38 @@ builder.Services.AddControllers()
             JsonNumberHandling.AllowNamedFloatingPointLiterals;
     });
 
-//  Swagger
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// вњ… РџСЂР°РІРёР»СЊРЅР°СЏ РЅР°СЃС‚СЂРѕР№РєР° CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy => policy
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
-            .WithOrigins("http://localhost:3000"));
+            // Р Р°Р·СЂРµС€Р°РµРј Р·Р°РїСЂРѕСЃС‹ СЃ С„СЂРѕРЅС‚Р° (РїРѕ IP Рё РїРѕСЂС‚Сѓ, РіРґРµ РєСЂСѓС‚РёС‚СЃСЏ С„СЂРѕРЅС‚РµРЅРґ)
+            .WithOrigins(
+                "http://80.93.62.78:3000",   // С‚РІРѕР№ С„СЂРѕРЅС‚ РЅР° СЃРµСЂРІРµСЂРµ
+                "http://localhost:3000"      // РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕР№ РѕС‚Р»Р°РґРєРё
+            );
+    });
 });
-builder.Services.AddSwaggerGen();
 
-//  Регистрация всех зависимостей (IoC контейнер)
+// Р РµРіРёСЃС‚СЂР°С†РёСЏ Р·Р°РІРёСЃРёРјРѕСЃС‚РµР№ (IoC РєРѕРЅС‚РµР№РЅРµСЂ)
 builder.Services.AddSingleton<IEntropySource, HybridEntropySource>();
 builder.Services.AddSingleton<IStatisticalTester, AdvancedStatisticalTester>();
 builder.Services.AddSingleton<IRandomGenerator, TransparentRNG>();
 builder.Services.AddSingleton<TestDataGenerator>();
-
-//  Добавляем сервис валидации / проверки
 builder.Services.AddSingleton<VerificationService>();
 
-//  Создаём приложение
+// РЎРѕР·РґР°С‘Рј РїСЂРёР»РѕР¶РµРЅРёРµ
 var app = builder.Build();
 
-//  Конфигурация HTTP pipeline
+// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ HTTP pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -47,13 +53,15 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+
+// вњ… РџРѕРґРєР»СЋС‡Р°РµРј CORS РґРѕ РјР°СЂС€СЂСѓС‚РѕРІ
 app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
 app.MapControllers();
 
-//  Лог для разработчика
+// Р›РѕРі РґР»СЏ СЂР°Р·СЂР°Р±РѕС‚С‡РёРєР°
 Console.WriteLine("RandomTrust Web API is starting...");
 Console.WriteLine("Available endpoints:");
 Console.WriteLine("  POST /api/random/entropy - Add entropy from mouse movement");
