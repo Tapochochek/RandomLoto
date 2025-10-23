@@ -20,7 +20,7 @@ export default function LottoMachine({mouseEvents}) {
     setRunning(true)
     setNumbers([])
     try{
-      const res = await fetch(`http://80.93.62.78:5014/api/random/lottery/${count}`)
+      const res = await fetch(`http://80.93.62.78:8080/api/random/lottery/${count}`)
 
       if(!res.ok) throw new Error('api')
       const arr = await res.json()
